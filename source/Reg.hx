@@ -34,4 +34,32 @@ class Reg
 	 * Especially useful for setting up multiple save slots.
 	 */
 	public static var saves:Array<FlxSave> = [];
+	
+	public static inline var RESP_FRIENDLY:Int = 0;
+	public static inline var RESP_NEUTRAL:Int = 1;
+	public static inline var RESP_SYMP:Int = 2;
+	public static inline var RESP_ANGRY:Int = 3;
+	
+	public static inline var MOOD_HAPPY:Int = 0;
+	public static inline var MOOD_NEUTRAL:Int = 1;
+	public static inline var MOOD_SAD:Int = 2;
+	public static inline var MOOD_ANGRY:Int = 3;
+	public static inline var MOOD_SCARED:Int = 4;
+		
+	public static function getResponseName(Response:Int):String
+	{
+		switch (Response) 
+		{
+			case RESP_FRIENDLY:
+				return "Friendly";
+			case RESP_NEUTRAL:
+				return "Neutral";
+			case RESP_SYMP:
+				return "Sympathetic";
+			case RESP_ANGRY:
+				return "Angry";
+		}
+		return "";
+	}
+	
 }
