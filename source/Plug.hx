@@ -18,8 +18,7 @@ class Plug extends FlxSpriteButton
 		whichPlug = WhichPlug;
 		
 		super(X, Y, null, Callback.bind(whichPlug));
-		makeGraphic(20, 50, whichPlug == PLUG_IN ? FlxColor.BLACK : FlxColor.RED);
-		
+		loadGraphic(whichPlug == PLUG_IN ? AssetPaths.plug_black__png : AssetPaths.plug_red__png);
 		
 	}
 	

@@ -12,7 +12,7 @@ class Port extends FlxSpriteButton
 	{
 		portNo = PortNo;
 		super(X, Y, null, Callback.bind(portNo));
-		makeGraphic(40, 40, FlxColor.GRAY);
+		loadGraphic(AssetPaths.Port__png, false);
 		
 	}
 	
