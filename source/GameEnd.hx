@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.util.FlxAxes;
@@ -19,8 +20,18 @@ class GameEnd extends FlxState
 		
 		add(new FlxSprite(0, 0, AssetPaths.back__png));
 		
-		_next = new FlxButton(FlxG.width - 84, FlxG.height - 24, "End", gotoMenu);
+		_next = new FlxButton(FlxG.width - 84, FlxG.height - 36, "End", gotoMenu);
+		_next.loadGraphic(AssetPaths.big_light_blue_button__png, true, 80, 32);
+		_next.label.size = 20;
+		_next.labelOffsets[FlxButton.NORMAL].y = 0;
+		_next.labelOffsets[FlxButton.HIGHLIGHT].y = 0;
+		_next.labelOffsets[FlxButton.PRESSED].y = 3;
 		_next.visible = false;
+		#if flash
+		_next.onUp.sound = new FlxSound().loadEmbedded(AssetPaths.switch25__mp3);
+		#else
+		_next.onUp.sound = new FlxSound().loadEmbedded(AssetPaths.switch25__wav);
+		#end
 		add(_next);
 		
 		FlxG.mouse.visible = false;
@@ -124,7 +135,7 @@ class GameEnd extends FlxState
 		txt1.x = (FlxG.width / 2) + 40;
 		add(txt1);
 		
-		
+		Reg.clearSave();
 		super.create();
 		
 		FlxG.camera.fade(0xff111111, 1, true, finishFadeIn);

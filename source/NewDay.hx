@@ -31,6 +31,9 @@ class NewDay extends FlxState
 		
 		super.create();
 		
+		if (FlxG.sound.music!=null)
+			FlxG.sound.music.stop();
+		
 			
 		FlxG.camera.fade(0xff111111, 1, true, finishFadeIn);
 		
@@ -38,7 +41,11 @@ class NewDay extends FlxState
 	
 	private function finishFadeIn():Void
 	{
+		#if flash
 		FlxG.sound.play(AssetPaths.time_clock__mp3, 1, false, true);
+		#else
+		FlxG.sound.play(AssetPaths.time_clock__wav, 1, false, true);
+		#end
 		timer = 2;
 	}
 	
@@ -50,9 +57,22 @@ class NewDay extends FlxState
 			{
 				timer = -100;
 				if (Reg.day < 5)
+				{
+					#if flash
 					FlxG.sound.playMusic(AssetPaths.mozart__mp3, 1, false);
+					#else
+					FlxG.sound.playMusic(AssetPaths.mozart__ogg, 1, false);
+					#end
+				}
 				else
+				{
+					#if flash
 					FlxG.sound.playMusic(AssetPaths.mars__mp3, 1, false);
+					#else
+					FlxG.sound.playMusic(AssetPaths.mars__ogg, 1, false);
+					#end
+					
+				}
 				FlxG.camera.fade(0xff111111, 1, false, finishFadeOut);
 			}
 			else

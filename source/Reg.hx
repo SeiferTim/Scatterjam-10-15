@@ -74,6 +74,12 @@ class Reg
 	{
 		scores[day][SCORE_BAD]++;
 	}
+	
+	public static function clearSave():Void
+	{
+		saves = [];
+		day = 0;
+	}
 		
 	public static function getResponseImage(Response:Int):Null<FlxSprite>
 	{

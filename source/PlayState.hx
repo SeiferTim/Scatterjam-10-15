@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -60,6 +61,8 @@ class PlayState extends FlxState
 	
 	private var _smoke:Smoke;
 	private var _brokenPlug:Int = -1;
+	private var _static:FlxSound;
+	private var _guns:FlxSound;
 	
 	
 	override public function create():Void
@@ -70,7 +73,7 @@ class PlayState extends FlxState
 		_comingOrGoing = true;
 		
 		_switchBoard = new FlxSprite(0, 0);
-		_switchBoard.makeGraphic(FlxG.width, FlxG.height, FlxColor.BROWN);
+		_switchBoard.loadGraphic(AssetPaths.BACKGROUND__png);
 		add(_switchBoard);
 		
 		_ports = [];
@@ -119,22 +122,32 @@ class PlayState extends FlxState
 		
 		var r:ResponseButton;
 		xPos = 120;
-		yPos = FlxG.height -60;
+		yPos = FlxG.height -64;
 		for (i in 0...2)
 		{
 			for (j in 0...2)
 			{
-				r = new ResponseButton(xPos + (80 * i), yPos + (20 * j), i * 2 + j, clickResponse);
+				r = new ResponseButton(xPos + (80 * i), yPos + (30 * j), i * 2 + j, clickResponse);
 				_responses.push(r);
 				add(r);
 			}
 		}
 		
-		_emergency = new FlxSpriteButton(300, FlxG.height - 60, null, clickEmergency);
-		_emergency.makeGraphic(40, 20, FlxColor.RED);
+		_emergency = new FlxSpriteButton(300, FlxG.height - 64, null, clickEmergency);
+		_emergency.loadGraphic(AssetPaths.emergency__png, true, 50, 32);
+		#if flash
+		_emergency.onUp.sound = new FlxSound().loadEmbedded(AssetPaths.switch25__mp3);
+		#else
+		_emergency.onUp.sound = new FlxSound().loadEmbedded(AssetPaths.switch25__wav);
+		#end
 		add(_emergency);
-		_repair = new FlxSpriteButton(300, FlxG.height - 40, null, clickRepair);
-		_repair.makeGraphic(40, 20, FlxColor.GREEN);
+		_repair = new FlxSpriteButton(300, FlxG.height - 34, null, clickRepair);
+		_repair.loadGraphic(AssetPaths.repair_button__png, true, 50, 32);
+		#if flash
+		_repair.onUp.sound = new FlxSound().loadEmbedded(AssetPaths.switch25__mp3);
+		#else
+		_repair.onUp.sound = new FlxSound().loadEmbedded(AssetPaths.switch25__wav);
+		#end
 		add(_repair);
 		
 		_smoke = new Smoke();
@@ -154,18 +167,31 @@ class PlayState extends FlxState
 		_plugCursors.push(pc);
 		add(pc);
 		
-		_speech = new FlxSprite(FlxG.width - 40, FlxG.height - 120);
-		_speech.makeGraphic(32, 32, FlxColor.WHITE);
+		_speech = new FlxSprite(FlxG.width - 48, FlxG.height - 120);
+		//_speech.makeGraphic(32, 32, FlxColor.WHITE);
+		_speech.loadGraphic(AssetPaths.SPEECH__png, false, 40, 35);
 		_speech.kill();
 		add(_speech);
 		
-		_moodIcon = new MoodIcon(Std.int(_speech.x + (_speech.width / 2) - 9), Std.int(_speech.y + (_speech.height / 2) - 9));
+		_moodIcon = new MoodIcon(Std.int(_speech.x + 5), Std.int(_speech.y +7));
 		_moodIcon.kill();
 		add(_moodIcon);
 		
 		lockResponses();
 		
 		super.create();
+		
+		if (Reg.day == 5)
+		{
+			#if flash
+			_guns = FlxG.sound.play(AssetPaths.guns__mp3, 0, true, false);
+			#else
+			_guns = FlxG.sound.play(AssetPaths.guns__ogg, 0, true, false);
+			#end
+			FlxG.watch.add(this, "_gameTime");
+			FlxG.watch.add(_guns, "volume");
+			
+		}
 		
 		FlxG.camera.fade(0xff111111, 1, true, finishFadeIn);
 		
@@ -194,6 +220,11 @@ class PlayState extends FlxState
 		FlxG.camera.flash(0x9900ff00, .2);
 		_lights[_brokenPlug].status = CallLight.STATE_OFF;
 		mode = MODE_NOCALL;
+		if (_static != null)
+		{
+			_static.stop();
+			_static = FlxDestroyUtil.destroy(_static);
+		}
 	}
 	
 	public function clickEmergency():Void
@@ -209,7 +240,11 @@ class PlayState extends FlxState
 			}
 			else
 			{
+				#if flash
 				FlxG.sound.play(AssetPaths.dialtone__mp3, 1, false, true).fadeOut(3);
+				#else
+				FlxG.sound.play(AssetPaths.dialtone__wav, 1, false, true).fadeOut(3);
+				#end
 				badCall();
 			}
 			
@@ -283,7 +318,11 @@ class PlayState extends FlxState
 					_call.timer = FlxG.random.float(10, 20);
 					_holdingPlug = -1;
 					showSpeech();
+					#if flash
 					FlxG.sound.play(AssetPaths.plug_in__mp3, 1, false, true);
+					#else
+					FlxG.sound.play(AssetPaths.plug_in__wav, 1, false, true);
+					#end
 					
 					
 				}
@@ -298,7 +337,11 @@ class PlayState extends FlxState
 					FlxG.mouse.visible = true;
 					_lights[PortNo].status = CallLight.STATE_ON;
 					_holdingPlug = -1;
+					#if flash
 					FlxG.sound.play(AssetPaths.plug_in__mp3, 1, false, true);
+					#else
+					FlxG.sound.play(AssetPaths.plug_in__wav, 1, false, true);
+					#end
 				}
 			}
 			else
@@ -312,7 +355,11 @@ class PlayState extends FlxState
 				FlxG.mouse.visible = true;
 				_lights[PortNo].status = CallLight.STATE_ON;
 				_holdingPlug = -1;
+				#if flash
 				FlxG.sound.play(AssetPaths.plug_in__mp3, 1, false, true);
+				#else
+				FlxG.sound.play(AssetPaths.plug_in__wav, 1, false, true);
+				#end
 				
 			}
 		}
@@ -328,10 +375,18 @@ class PlayState extends FlxState
 			{
 				
 				// oops!
+				#if flash
 				FlxG.sound.play(AssetPaths.dialtone__mp3, 1, false, true).fadeOut(3);
+				#else
+				FlxG.sound.play(AssetPaths.dialtone__wav, 1, false, true).fadeOut(3);
+				#end
 				badCall();
 			}
+			#if flash
 			FlxG.sound.play(AssetPaths.unplug__mp3, 1, false, true);
+			#else
+			FlxG.sound.play(AssetPaths.unplug__wav, 1, false, true);
+			#end
 			
 		}
 	}
@@ -409,7 +464,11 @@ class PlayState extends FlxState
 			}
 			if (_call.health <= 0)
 			{
+				#if flash
 				FlxG.sound.play(AssetPaths.dialtone__mp3, 1, false, true).fadeOut(3);
+				#else
+				FlxG.sound.play(AssetPaths.dialtone__wav, 1, false, true).fadeOut(3);
+				#end
 				badCall();
 			}
 			else
@@ -434,6 +493,14 @@ class PlayState extends FlxState
 		if (_gameTime > 0 || (mode != MODE_NOCALL && mode != MODE_NEWCALL)  )
 		{
 			_gameTime-= elapsed;
+			
+			if (Reg.day == 5)
+			{
+				
+				
+				_guns.volume = 1 - Math.min(1, _gameTime / 60);
+				
+			}
 		
 			if (mode == MODE_BROKEN)
 			{
@@ -471,7 +538,11 @@ class PlayState extends FlxState
 					FlxG.mouse.visible = true;
 					newCallTimer = -100;
 					mode = MODE_NOCALL;
+					#if flash
 					FlxG.sound.play(AssetPaths.unplug__mp3, 1, false, true);
+					#else
+					FlxG.sound.play(AssetPaths.unplug__wav, 1, false, true);
+					#end
 				
 				}
 				else if (_call == null)
@@ -480,7 +551,7 @@ class PlayState extends FlxState
 					
 					if (newCallTimer == -100)
 					{
-						newCallTimer = FlxG.random.float(5, 15) * (1 - (Reg.day * .2));
+						newCallTimer = FlxG.random.float(5, 10) * (1 - (Reg.day * .2));
 					}
 					if (newCallTimer <= 0)
 					{
@@ -491,7 +562,7 @@ class PlayState extends FlxState
 						}
 						else
 						{
-							if (FlxG.random.bool(10 + (5 * Reg.day)))
+							if (FlxG.random.bool(2 + (5 * Reg.day)))
 							{
 								breakPort();
 							}
@@ -530,7 +601,11 @@ class PlayState extends FlxState
 								
 								if (_call.health <= 0)
 								{
+									#if flash
 									FlxG.sound.play(AssetPaths.dialtone__mp3, 1, false, true).fadeOut(3);
+									#else
+									FlxG.sound.play(AssetPaths.dialtone__wav, 1, false, true).fadeOut(3);
+									#end
 									badCall();
 								}
 							}
@@ -602,8 +677,25 @@ class PlayState extends FlxState
 		_plugs[Plug.PLUG_IN].visible = true;
 		_holdingPlug = -1;
 		FlxG.mouse.visible = true;
+		#if flash
+		FlxG.sound.play(AssetPaths.falling_tone__mp3, 1, false, false, startStatic);
+		#else
+		FlxG.sound.play(AssetPaths.falling_tone__wav, 1, false, false, startStatic);
+		#end
 		
-		
+	}
+	
+	private function startStatic():Void
+	{
+		if (mode == MODE_BROKEN)
+		{
+			#if flash
+			_static = FlxG.sound.play(AssetPaths.static__mp3, 1, true, false);
+			#else
+			_static = FlxG.sound.play(AssetPaths.static__wav, 1, true, false);
+			#end
+			
+		}
 	}
 	
 	private function finishFadeOut():Void
@@ -613,21 +705,21 @@ class PlayState extends FlxState
 	
 	private function lockResponses():Void
 	{
-		for (i in _responses)
+		/*for (i in _responses)
 		{
 			i.active = false;
 			i.alpha = .5;
-		}
+		}*/
 		_responsesLocked = true;
 	}
 	
 	private function unlockResponses():Void
 	{
-		for (i in _responses)
+		/*for (i in _responses)
 		{
 			i.active = true;
 			i.alpha = 1;
-		}
+		}*/
 		_responsesLocked = false;
 	}
 	

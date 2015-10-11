@@ -4,6 +4,7 @@ import flixel.addons.display.FlxSpriteAniRot;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -128,8 +129,18 @@ class EndDay extends FlxState
 		_score.scale.set(2, 2);
 		add(_score);
 		
-		_next = new FlxButton(FlxG.width - 84, FlxG.height - 24, Reg.day == 5 ? "Finish" : "Next Day", gotoNextDay);
+		_next = new FlxButton(FlxG.width - 84, FlxG.height - 36, Reg.day == 5 ? "Finish" : "Next Day", gotoNextDay);
+		_next.loadGraphic(AssetPaths.big_light_blue_button__png, true, 80, 32);
+		_next.label.size = 20;
+		_next.labelOffsets[FlxButton.NORMAL].y = 0;
+		_next.labelOffsets[FlxButton.HIGHLIGHT].y = 0;
+		_next.labelOffsets[FlxButton.PRESSED].y = 3;
 		_next.visible = false;
+		#if flash
+		_next.onUp.sound = new FlxSound().loadEmbedded(AssetPaths.switch25__mp3);
+		#else
+		_next.onUp.sound = new FlxSound().loadEmbedded(AssetPaths.switch25__wav);
+		#end
 		add(_next);
 		
 		FlxG.mouse.visible = false;

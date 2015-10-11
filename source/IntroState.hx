@@ -43,7 +43,11 @@ class IntroState extends FlxState
 		
 	private function finishFadeIn():Void
 	{
+		#if flash
 		FlxG.sound.play(AssetPaths.connections__mp3, 1, false, true, finishIntro);
+		#else
+		FlxG.sound.play(AssetPaths.connections__ogg, 1, false, true, finishIntro);
+		#end
 	}
 	
 	private function finishIntro():Void
